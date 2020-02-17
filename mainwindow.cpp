@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->scene = new QGraphicsScene(this);
 	this->ui->graphicsView->setScene(this->scene);
 	this->ui->graphicsView->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	this->ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+	this->ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
 	this->timer = new QTimer(this);
 	this->timer->setInterval(750);
@@ -19,13 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	this->scene->update();
 
-	//test
 	this->setFocus(Qt::FocusReason::NoFocusReason);
-
-	TetrisShape *shape = new LightningShape();
-	this->currentShape = shape;
-	scene->addItem(shape);
-	this->scene->update();
 }
 
 MainWindow::~MainWindow()
@@ -35,6 +31,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::start()
 {
+
+	TetrisShape *shape = new LightningShape();
+	this->currentShape = shape;
+	scene->addItem(shape);
+	this->scene->update();
+
 	this->running = true;
 	this->timer->start();
 	this->setFocus(Qt::FocusReason::NoFocusReason);
@@ -65,6 +67,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	{
 		switch (event->key())
 		{
+			case Qt::Key_Up:
 			case Qt::Key_Enter-1:
 			case Qt::Key_Enter:
 				this->currentShape->rotate();
@@ -87,17 +90,22 @@ void MainWindow::update()
 {
 	if(running)
 	{
-		if(this->currentShape->isOnGround())
+		if(this->currentShape->isOnGround(&this->blocks))
 		{
-			this->blocks.append(this->currentShape->disperse());
-			QVector<Block*> blc = this->currentShape->disperse();
 			this->scene->removeItem(this->currentShape);
-			delete this->currentShape;
-
+			QVector<Block*> blc = this->currentShape->disperse();
+			this->blocks.append(blc);
 			for (int i = 0;i < blc.length();i ++)
 			{
 				this->scene->addItem(blc.at(i));
 			}
+
+			//this always crushes the program for some reason -> cause of delete this in TetrisShape::disperse();
+			//delete this->currentShape;
+
+			this->currentShape = new LightningShape();
+			scene->addItem(this->currentShape);
+			this->scene->update();
 		}
 		else
 		{

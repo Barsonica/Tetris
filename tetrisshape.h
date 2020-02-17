@@ -18,7 +18,7 @@ public:
 
 	virtual void rotate(uint8_t state = 5);
 	void move(QVector<Block*> *blockList, MoveDirection direction = MoveDirection::moveDown);
-	bool isOnGround();
+	bool isOnGround(QVector<Block*> *blockList);
 
 	QVector<Block*> disperse();
 

@@ -69,7 +69,7 @@ void TetrisShape::move(QVector<Block*> *blockList, MoveDirection direction)
 	this->pos.setY(newY);
 }
 
-bool TetrisShape::isOnGround()
+bool TetrisShape::isOnGround(QVector<Block*> *blockList)
 {
 	for(int i = 0; i < 4; i++)
 	{
@@ -79,6 +79,17 @@ bool TetrisShape::isOnGround()
 			{
 				if(pos.y() + i == 19)
 					return true;
+			}
+
+			for(int b = 0; b < blockList->length(); b++)
+			{
+				if(blockList->at(b) != nullptr)
+				{
+					if(blockList->at(b)->getPos() == QPoint(pos.x() + a, pos.y() + i + 1))
+					{
+						return true;
+					}
+				}
 			}
 		}
 	}
@@ -102,6 +113,7 @@ QVector<Block*> TetrisShape::disperse()
 		}
 	}
 
+	delete this;
 	return blocks;
 }
 

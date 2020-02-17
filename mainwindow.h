@@ -37,6 +37,7 @@ private:
 
 public slots:
 	void update();
+
 private slots:
 	void on_startButton_clicked();
 };
