@@ -28,14 +28,19 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     block.cpp \
-    tetrisshape.cpp \
-    Shapes/lightningShape.cpp
+    tetrisshape.cpp
 
 HEADERS += \
         mainwindow.h \
     block.h \
     tetrisshape.h \
-    Shapes/lightningShape.h
+    Shapes/lightningShape.h \
+    Shapes/tshape.h \
+    Shapes/lightningshapetwo.h \
+    Shapes/cubeblock.h \
+    Shapes/longshape.h \
+    Shapes/lshape.h \
+    Shapes/lshapetwo.h
 
 FORMS += \
         mainwindow.ui

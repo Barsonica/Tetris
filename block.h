@@ -2,6 +2,7 @@
 #define BLOCK_H
 
 #include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QVector>
 #include <QPainter>
 #include <QDebug>
@@ -13,8 +14,9 @@ public:
 	Block(int x, int y);
 
 	void setColor(QColor color);
-	bool collides(QVector<Block*> *blockList);
-	QPoint getPos();
+	QPoint getPosition();
+	void setXPos(int x);
+	void setYPos(int y);
 
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter,
@@ -25,7 +27,7 @@ public:
 	static int blockSize;
 
 private:
-	QPoint pos;
+	QPoint position;
 	QColor color;
 };
 

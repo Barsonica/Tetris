@@ -4,8 +4,9 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QTimer>
+#include <QRandomGenerator>
 
-#include "Shapes/lightningShape.h"
+#include "Shapes/lshapetwo.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,7 +24,7 @@ private:
 	Ui::MainWindow *ui;
 
 	TetrisShape *currentShape;
-	QVector<Block*> blocks;
+	Block *blocks[20][10];
 
 	QGraphicsScene *scene;
 	QTimer *timer;
@@ -32,6 +33,9 @@ private:
 	void start();
 	void pause();
 	void play();
+
+	void spawnNewShape();
+	void removeRows();
 
 	void keyPressEvent(QKeyEvent *event);
 

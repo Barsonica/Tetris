@@ -19,9 +19,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->timer->setInterval(750);
 	connect(timer, &QTimer::timeout, this, &MainWindow::update);
 
+	for(int y = 0; y < 20; y++)
+		for(int x = 0; x < 10; x++)
+			this->blocks[y][x] = nullptr;
 	this->scene->update();
 
 	this->setFocus(Qt::FocusReason::NoFocusReason);
+
+	//Block *b = new Block(5,5);
+	//b->setColor(Qt::blue);
+	//this->scene->addItem(b);
 }
 
 MainWindow::~MainWindow()
@@ -31,11 +38,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::start()
 {
-
-	TetrisShape *shape = new LightningShape();
-	this->currentShape = shape;
-	scene->addItem(shape);
-	this->scene->update();
+	spawnNewShape();
 
 	this->running = true;
 	this->timer->start();
@@ -51,6 +54,93 @@ void MainWindow::play()
 {
 	this->running = true;
 	this->timer->start();
+}
+
+void MainWindow::spawnNewShape()
+{
+	int shapeType = rand() % 7;
+	TetrisShape *shape;
+
+	switch (shapeType)
+	{
+		case 0:
+			shape = new LightningShape();
+			break;
+		case 1:
+			shape = new LightningShapeTwo();
+			break;
+		case 2:
+			shape = new CubeBlock();
+			break;
+		case 3:
+			shape = new TShape();
+			break;
+		case 4:
+			shape = new LongShape();
+			break;
+		case 5:
+			shape = new LShape();
+			break;
+		case 6:
+			shape = new LShapeTwo();
+			break;
+		default:
+			shape = new LightningShape();
+			break;
+	}
+
+	this->currentShape = shape;
+	scene->addItem(shape);
+}
+
+void MainWindow::removeRows()
+{
+	int lines[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+	for(int y = 0; y < 20; y++)
+	{
+		for(int x = 0; x < 10; x++)
+		{
+			//collision
+			if(this->blocks[y][x] != nullptr)
+			{
+				lines[y]++;
+			}
+		}
+	}
+
+	for(int i = 0; i < 20; i++)
+	{
+		//if line is full
+		if(lines[i] == 10)
+		{
+			//remove the full row
+			for(int x = 0; x < 10; x++)
+			{
+				//collision
+				if(this->blocks[i][x] != nullptr)
+				{
+					this->scene->removeItem(this->blocks[i][x]);
+					delete this->blocks[i][x];
+					this->blocks[i][x] = nullptr;
+				}
+			}
+
+			//move every upper ( < Y) row downwards (y++)
+			for(int y = i-1; y >= 0; y--)
+			{
+				for(int x = 0; x < 10; x++)
+				{
+					//collision
+					if(this->blocks[y][x] != nullptr)
+					{
+						this->blocks[y][x]->setYPos(y+1);
+					}
+				}
+			}
+
+		}
+	}
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -73,13 +163,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 				this->currentShape->rotate();
 				break;
 			case Qt::Key_Left:
-				this->currentShape->move(&this->blocks, MoveDirection::moveLeft);
+				this->currentShape->move(this->blocks, MoveDirection::moveLeft);
 				break;
 			case Qt::Key_Right:
-				this->currentShape->move(&this->blocks, MoveDirection::moveRight);
+				this->currentShape->move(this->blocks, MoveDirection::moveRight);
 				break;
 			case Qt::Key_Down:
-				this->currentShape->move(&this->blocks, MoveDirection::moveDown);
+				this->currentShape->move(this->blocks, MoveDirection::moveDown);
 				break;
 		}
 		this->scene->update();
@@ -90,28 +180,16 @@ void MainWindow::update()
 {
 	if(running)
 	{
-		if(this->currentShape->isOnGround(&this->blocks))
+		if(!this->currentShape->move(this->blocks, MoveDirection::moveDown))
 		{
+			this->currentShape->disperse(this->blocks, this->scene);
+
 			this->scene->removeItem(this->currentShape);
-			QVector<Block*> blc = this->currentShape->disperse();
-			this->blocks.append(blc);
-			for (int i = 0;i < blc.length();i ++)
-			{
-				this->scene->addItem(blc.at(i));
-			}
+			delete this->currentShape;
 
-			//this always crushes the program for some reason -> cause of delete this in TetrisShape::disperse();
-			//delete this->currentShape;
-
-			this->currentShape = new LightningShape();
-			scene->addItem(this->currentShape);
-			this->scene->update();
+			removeRows();
+			spawnNewShape();
 		}
-		else
-		{
-			this->currentShape->move(&this->blocks, MoveDirection::moveDown);
-		}
-
 		this->scene->update();
 	}
 }

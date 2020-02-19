@@ -1,35 +1,35 @@
-#ifndef LIGHTINGSHAPE_H
-#define LIGHTINGSHAPE_H
+#ifndef TSHAPE_H
+#define TSHAPE_H
 
-#include "../tetrisshape.h"
+#include "lightningshapetwo.h"
 
-class LightningShape : public TetrisShape
+class TShape : public TetrisShape
 {
 public:
-	LightningShape() : TetrisShape(Qt::red)
+	TShape() : TetrisShape(QColor::fromRgb(160,0,240))
 	{
 		bool types[4][4][4] =
 		{
 			{
-				{0,1,1,0},
-				{1,1,0,0},
-				{0,0,0,0},
-				{0,0,0,0}
-			},
-			{
-				{1,0,0,0},
-				{1,1,0,0},
+				{1,1,1,0},
 				{0,1,0,0},
-				{0,0,0,0}
-			},
-			{
-				{0,1,1,0},
-				{1,1,0,0},
 				{0,0,0,0},
 				{0,0,0,0}
 			},
 			{
 				{1,0,0,0},
+				{1,1,0,0},
+				{1,0,0,0},
+				{0,0,0,0}
+			},
+			{
+				{0,1,0,0},
+				{1,1,1,0},
+				{0,0,0,0},
+				{0,0,0,0}
+			},
+			{
+				{0,1,0,0},
 				{1,1,0,0},
 				{0,1,0,0},
 				{0,0,0,0}
@@ -41,4 +41,4 @@ public:
 	}
 };
 
-#endif // LIGHTINGSHAPE_H
+#endif // TSHAPE_H

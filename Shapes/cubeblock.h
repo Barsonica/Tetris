@@ -1,37 +1,37 @@
-#ifndef LIGHTINGSHAPE_H
-#define LIGHTINGSHAPE_H
+#ifndef CUBEBLOCK_H
+#define CUBEBLOCK_H
 
-#include "../tetrisshape.h"
+#include "tshape.h"
 
-class LightningShape : public TetrisShape
+class CubeBlock : public TetrisShape
 {
 public:
-	LightningShape() : TetrisShape(Qt::red)
+	CubeBlock() : TetrisShape(Qt::yellow)
 	{
 		bool types[4][4][4] =
 		{
 			{
-				{0,1,1,0},
+				{1,1,0,0},
 				{1,1,0,0},
 				{0,0,0,0},
 				{0,0,0,0}
 			},
 			{
-				{1,0,0,0},
 				{1,1,0,0},
-				{0,1,0,0},
-				{0,0,0,0}
-			},
-			{
-				{0,1,1,0},
 				{1,1,0,0},
 				{0,0,0,0},
 				{0,0,0,0}
 			},
 			{
-				{1,0,0,0},
 				{1,1,0,0},
-				{0,1,0,0},
+				{1,1,0,0},
+				{0,0,0,0},
+				{0,0,0,0}
+			},
+			{
+				{1,1,0,0},
+				{1,1,0,0},
+				{0,0,0,0},
 				{0,0,0,0}
 			},
 		};
@@ -41,4 +41,4 @@ public:
 	}
 };
 
-#endif // LIGHTINGSHAPE_H
+#endif // CUBEBLOCK_H

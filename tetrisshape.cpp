@@ -2,38 +2,48 @@
 
 TetrisShape::TetrisShape()
 {
+	this->setX(0);
+	this->setY(0);
+	this->position.setX(3);
+}
 
+TetrisShape::TetrisShape(QColor color)
+{
+	this->color = color;
+	TetrisShape();
 }
 
 void TetrisShape::rotate(uint8_t state)
 {
-	if(state < 3)
+	if(state < 4)
 	{
 		rotation = state;
 	}
 	else
 	{
 		rotation++;
-		if(rotation > 2)
+		if(rotation == 4)
 			rotation = 0;
 	}
+
+	memcpy(this->blocks, blockRotations[rotation], sizeof(blockRotations[rotation]));
 }
 
-void TetrisShape::move(QVector<Block*> *blockList, MoveDirection direction)
+bool TetrisShape::move(Block *blockArray[20][10], MoveDirection direction)
 {
-	int newX = this->pos.x();
-	int newY = this->pos.y();
+	int newX = this->position.x();
+	int newY = this->position.y();
 
 	switch (direction)
 	{
 		case moveLeft:
-			newX = this->pos.x()-1;
+			newX = this->position.x()-1;
 			break;
 		case moveRight:
-			newX = this->pos.x()+1;
+			newX = this->position.x()+1;
 			break;
 		case moveDown:
-			newY = this->pos.y()+1;
+			newY = this->position.y()+1;
 			break;
 	}
 
@@ -47,17 +57,23 @@ void TetrisShape::move(QVector<Block*> *blockList, MoveDirection direction)
 				int blockY = newY + i;
 
 				if(blockY == 20)
-					return;
+					return false;
 
 				if(blockX == 10 | blockX < 0)
-					return;
+					return false;
 
-				for(int i = 0; i < blockList->length(); i++)
+				for(int y = 0; y < 20; y++)
 				{
-					//collision
-					if(blockList->at(i)->getPos() == QPoint(blockX,blockY))
+					for(int x = 0; x < 10; x++)
 					{
-						return;
+						if(blockArray[y][x] != nullptr)
+						{
+							//collision
+							if(blockArray[y][x]->getPosition() == QPoint(blockX,blockY))
+							{
+								return false;
+							}
+						}
 					}
 				}
 			}
@@ -65,41 +81,13 @@ void TetrisShape::move(QVector<Block*> *blockList, MoveDirection direction)
 	}
 	// no collision detected
 
-	this->pos.setX(newX);
-	this->pos.setY(newY);
+	this->position.setX(newX);
+	this->position.setY(newY);
+	return true;
 }
 
-bool TetrisShape::isOnGround(QVector<Block*> *blockList)
+void TetrisShape::disperse(Block *blockList[20][10], QGraphicsScene *scene)
 {
-	for(int i = 0; i < 4; i++)
-	{
-		for(int a = 0; a < 4; a++)
-		{
-			if(this->blocks[i][a])
-			{
-				if(pos.y() + i == 19)
-					return true;
-			}
-
-			for(int b = 0; b < blockList->length(); b++)
-			{
-				if(blockList->at(b) != nullptr)
-				{
-					if(blockList->at(b)->getPos() == QPoint(pos.x() + a, pos.y() + i + 1))
-					{
-						return true;
-					}
-				}
-			}
-		}
-	}
-
-	return false;
-}
-
-QVector<Block*> TetrisShape::disperse()
-{
-	QVector<Block*> blocks;
 
 	for(int i = 0; i < 4; i++)
 	{
@@ -107,35 +95,48 @@ QVector<Block*> TetrisShape::disperse()
 		{
 			if(this->blocks[i][a])
 			{
-				Block *b = new Block(pos.x() + a, pos.y() + i);
-				blocks.append(b);
+				int blockX = this->position.x() + a;
+				int blockY = this->position.y() + i;
+
+				Block *b = new Block(blockX, blockY);
+				b->setColor(this->color);
+
+				blockList[blockY][blockX] = b;
+				scene->addItem(b);
+
 			}
 		}
 	}
-
-	delete this;
-	return blocks;
 }
 
 QRectF TetrisShape::boundingRect() const
 {
-
+	return QRectF(this->position.x(),this->position.y(),Block::blockSize,Block::blockSize);
 }
 
 void TetrisShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+	painter->resetTransform();
+
+	QBrush b = painter->brush();
+	b.setColor(this->color);
+	b.setStyle(Qt::SolidPattern);
+	painter->setBrush(b);
+
 	for(int i = 0; i < 4; i++)
 	{
 		for(int a = 0; a < 4; a++)
 		{
 			if(this->blocks[i][a])
 			{
-				painter->drawRect(this->pos.x() * Block::blockSize + a * Block::blockSize,
-								  this->pos.y() * Block::blockSize + i * Block::blockSize,
+				painter->drawRect(this->position.x() * Block::blockSize + a * Block::blockSize,
+								  this->position.y() * Block::blockSize + i * Block::blockSize,
 								  Block::blockSize,
 								  Block::blockSize
 								  );
 			}
 		}
 	}
+
+	qDebug() << QString::number(this->pos().x()) + " : " + QString::number(this->pos().y());
 }

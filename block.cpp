@@ -3,14 +3,12 @@
 int Block::blockSize = 30;
 
 Block::Block()
-{
-
-}
+{}
 
 Block::Block(int x, int y)
 {
-	this->pos.setX(x);
-	this->pos.setY(y);
+	this->position.setX(x);
+	this->position.setY(y);
 }
 
 void Block::setColor(QColor color)
@@ -18,34 +16,38 @@ void Block::setColor(QColor color)
 	this->color = color;
 }
 
-bool Block::collides(QVector<Block *> *blockList)
+QPoint Block::getPosition()
 {
-	if(pos.y() > 20)
-		return true;
-
-	if(pos.x() > 10 | pos.x() < 0)
-		return true;
-
-	for(int i = 0; i < blockList->length(); i++)
-	{
-		if(blockList->at(i)->getPos() == pos)
-			return true;
-	}
-
-	return false;
+	return this->position;
 }
 
-QPoint Block::getPos()
+void Block::setXPos(int x)
 {
-	return pos;
+	this->position.setX(x);
+}
+
+void Block::setYPos(int y)
+{
+	this->position.setY(y);
 }
 
 QRectF Block::boundingRect() const
 {
-	return QRect(this->pos.x() * blockSize, this->pos.y() * blockSize, blockSize, blockSize);
+	return QRect(this->position.x() * blockSize, this->position.y() * blockSize, blockSize, blockSize);
 }
 
 void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+	painter->resetTransform();
+
+	QBrush b = painter->brush();
+	b.setColor(this->color);
+	b.setStyle(Qt::SolidPattern);
+	painter->setBrush(b);
+
 	painter->drawRect(boundingRect());
+
+	//qDebug() << "blocks";
+	//qDebug() << QString::number(getPosition().x()) + " : " + QString::number(getPosition().y());
+	//qDebug() << "blocks";
 }
