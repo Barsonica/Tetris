@@ -137,6 +137,4 @@ void TetrisShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 			}
 		}
 	}
-
-	qDebug() << QString::number(this->pos().x()) + " : " + QString::number(this->pos().y());
 }

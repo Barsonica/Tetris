@@ -95,6 +95,37 @@ void MainWindow::spawnNewShape()
 
 void MainWindow::removeRows()
 {
+
+	for(int y = 0; y < 20; y++)
+	{
+		for(int x = 0; x < 10; x++)
+			if(this->blocks[y][x] == nullptr)
+				goto line_not_full;
+
+		for(int x = 0; x < 10; x++)
+		{
+			this->scene->removeItem(this->blocks[y][x]);
+			delete this->blocks[y][x];
+			this->blocks[y][x] = nullptr;
+			scene->invalidate();
+		}
+
+		/*for(int Y = y-1; Y >= 0; Y--)
+		{
+			for(int X = 0; X < 10; X++)
+			{
+				if(this->blocks[Y][X] != nullptr)
+				{
+					this->blocks[Y][X]->setYPos(Y+1);
+				}
+			}
+		}*/
+
+		line_not_full: scene->update();
+	}
+
+
+/*
 	int lines[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 	for(int y = 0; y < 20; y++)
@@ -140,7 +171,7 @@ void MainWindow::removeRows()
 			}
 
 		}
-	}
+	}*/
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -180,6 +211,8 @@ void MainWindow::update()
 {
 	if(running)
 	{
+		this->setFocus(Qt::FocusReason::NoFocusReason);
+
 		if(!this->currentShape->move(this->blocks, MoveDirection::moveDown))
 		{
 			this->currentShape->disperse(this->blocks, this->scene);
